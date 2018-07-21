@@ -11,17 +11,17 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/statistics")
-public class TransactionController {
+public class StatisticController {
 
-    private TransactionService transactionService;
+    private TransactionService statisticService;
 
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
+    public StatisticController(TransactionService statisticService) {
+        this.statisticService = statisticService;
     }
 
     @PostMapping
     public void create(@Valid Transaction transaction) {
-        transactionService.create(transaction);
+        statisticService.create(transaction);
     }
 
     @GetMapping
