@@ -24,6 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
         this.transactionAggregateRepository = transactionRepository;
     }
 
+    @Override
     public void save(Transaction transaction) {
         long currentMillis = Instant.now().toEpochMilli();
 
@@ -31,11 +32,13 @@ public class TransactionServiceImpl implements TransactionService {
 
         Long index = getIndexFromTransaction(transaction);
 
-        TransactionAggregate transactionAggregate = transactionAggregateRepository.find(index)
-                .map(aggregate -> compute(currentMillis, aggregate, transaction))
-                .orElse(initializeAggregate(transaction));
+        synchronized (this) {
+            TransactionAggregate transactionAggregate = transactionAggregateRepository.find(index)
+                    .map(aggregate -> compute(currentMillis, aggregate, transaction))
+                    .orElseGet(() -> initializeAggregate(transaction));
 
-        transactionAggregateRepository.save(index, transactionAggregate);
+            transactionAggregateRepository.save(index, transactionAggregate);
+        }
     }
 
     private TransactionAggregate initializeAggregate(Transaction transaction) {

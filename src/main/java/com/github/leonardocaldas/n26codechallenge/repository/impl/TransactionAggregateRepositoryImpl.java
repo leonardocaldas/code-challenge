@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-public class AggregateTransactionRepositoryImpl implements TransactionAggregateRepository {
+public class TransactionAggregateRepositoryImpl implements TransactionAggregateRepository {
     private final ConcurrentHashMap<Long, TransactionAggregate> aggregates;
 
-    public AggregateTransactionRepositoryImpl(@Value("${transaction.time-range}") Integer timeRange) {
+    public TransactionAggregateRepositoryImpl(@Value("${transaction.time-range}") Integer timeRange) {
         this.aggregates = new ConcurrentHashMap<>(timeRange);
     }
 
