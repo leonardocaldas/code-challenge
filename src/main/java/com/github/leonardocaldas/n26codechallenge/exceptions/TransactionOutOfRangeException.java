@@ -1,4 +1,3 @@
 package com.github.leonardocaldas.n26codechallenge.exceptions;
 
-public class TransactionInvalidException extends RuntimeException {
-}
+public class TransactionOutOfRangeException extends RuntimeException {}

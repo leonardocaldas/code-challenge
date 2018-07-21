@@ -1,31 +1,35 @@
 package com.github.leonardocaldas.n26codechallenge.web;
 
-import com.github.leonardocaldas.n26codechallenge.model.Transaction;
+import com.github.leonardocaldas.n26codechallenge.exceptions.TransactionOutOfRangeException;
+import com.github.leonardocaldas.n26codechallenge.representation.Transaction;
 import com.github.leonardocaldas.n26codechallenge.service.TransactionService;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/statistics")
-public class StatisticController {
+@RequestMapping("/transactions")
+public class TransactionController {
 
-    private TransactionService statisticService;
+    private TransactionService transactionService;
 
-    public StatisticController(TransactionService statisticService) {
-        this.statisticService = statisticService;
+    public TransactionController(TransactionService transactionService) {
+        this.transactionService = transactionService;
     }
 
     @PostMapping
-    public void create(@Valid Transaction transaction) {
-        statisticService.create(transaction);
-    }
+    public ResponseEntity<Void> create(@Valid @RequestBody Transaction transaction) {
+        try {
+            transactionService.save(transaction);
+            return new ResponseEntity<>(HttpStatus.CREATED);
 
-    @GetMapping
-    public void get() {
-
+        } catch (TransactionOutOfRangeException e) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 }

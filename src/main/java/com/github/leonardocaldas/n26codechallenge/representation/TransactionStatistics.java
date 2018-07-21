@@ -1,11 +1,10 @@
-package com.github.leonardocaldas.n26codechallenge.model;
+package com.github.leonardocaldas.n26codechallenge.representation;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 public class TransactionStatistics {
     private Double max = 0.0;

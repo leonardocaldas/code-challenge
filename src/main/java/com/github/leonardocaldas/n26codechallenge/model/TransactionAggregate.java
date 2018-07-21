@@ -5,9 +5,10 @@ import lombok.Data;
 
 @Data
 @Builder
-public class TransactionBucket {
+public class TransactionAggregate {
+    private Double sum;
     private Double min;
     private Double max;
-    private Double sum;
     private Long count;
+    private Long timestampInSeconds;
 }

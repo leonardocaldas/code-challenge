@@ -1,6 +1,6 @@
-package com.github.leonardocaldas.n26codechallenge.helper;
+package com.github.leonardocaldas.n26codechallenge.util;
 
-public class TimestampThreshold {
+public class TransactionThreshold {
     public static Long getThresholdInMillis(Long currentMillis, Long timeRange) {
         return currentMillis - (timeRange * 1000);
     }

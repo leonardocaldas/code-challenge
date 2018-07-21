@@ -1,31 +1,23 @@
 package com.github.leonardocaldas.n26codechallenge.web;
 
-import com.github.leonardocaldas.n26codechallenge.model.Transaction;
-import com.github.leonardocaldas.n26codechallenge.service.TransactionService;
+import com.github.leonardocaldas.n26codechallenge.representation.TransactionStatistics;
+import com.github.leonardocaldas.n26codechallenge.service.StatisticService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-
 @RestController
 @RequestMapping("/statistics")
-public class TransactionController {
+public class StatisticController {
 
-    private TransactionService transactionService;
+    private StatisticService statisticService;
 
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
-
-    @PostMapping
-    public void create(@Valid Transaction transaction) {
-        transactionService.create(transaction);
+    public StatisticController(StatisticService statisticService) {
+        this.statisticService = statisticService;
     }
 
     @GetMapping
-    public void get() {
-
+    public TransactionStatistics get() {
+        return statisticService.getStatistics();
     }
 }
