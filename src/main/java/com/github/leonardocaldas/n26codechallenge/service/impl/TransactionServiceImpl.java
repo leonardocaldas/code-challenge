@@ -1,15 +1,18 @@
 package com.github.leonardocaldas.n26codechallenge.service.impl;
 
 import com.github.leonardocaldas.n26codechallenge.exceptions.TransactionOutOfRangeException;
-import com.github.leonardocaldas.n26codechallenge.util.TransactionThreshold;
-import com.github.leonardocaldas.n26codechallenge.representation.Transaction;
 import com.github.leonardocaldas.n26codechallenge.model.TransactionAggregate;
 import com.github.leonardocaldas.n26codechallenge.repository.TransactionAggregateRepository;
+import com.github.leonardocaldas.n26codechallenge.representation.Transaction;
 import com.github.leonardocaldas.n26codechallenge.service.TransactionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+
+import static com.github.leonardocaldas.n26codechallenge.util.TransactionLock.getLockForKey;
+import static com.github.leonardocaldas.n26codechallenge.util.TransactionThreshold.getThresholdInMillis;
+import static com.github.leonardocaldas.n26codechallenge.util.TransactionThreshold.getThresholdInSeconds;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -32,7 +35,8 @@ public class TransactionServiceImpl implements TransactionService {
 
         Long index = getIndexFromTransaction(transaction);
 
-        synchronized (this) {
+        synchronized (getLockForKey(index)) {
+
             TransactionAggregate transactionAggregate = transactionAggregateRepository.find(index)
                     .map(aggregate -> compute(currentMillis, aggregate, transaction))
                     .orElseGet(() -> initializeAggregate(transaction));
@@ -52,7 +56,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private TransactionAggregate compute(Long currentMillis, TransactionAggregate aggregate, Transaction transaction) {
-        long thresholdInSeconds = TransactionThreshold.getThresholdInSeconds(currentMillis, timeRange);
+        long thresholdInSeconds = getThresholdInSeconds(currentMillis, timeRange);
 
         if (aggregate.getTimestampInSeconds() < thresholdInSeconds) {
             return initializeAggregate(transaction);
@@ -72,11 +76,10 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private void validateIfTransactionIsOutOfRange(Transaction transaction, Long currentMillis) {
-        long threshold = TransactionThreshold.getThresholdInMillis(currentMillis, timeRange);
+        long threshold = getThresholdInMillis(currentMillis, timeRange);
 
         if (transaction.getTimestamp() < threshold || transaction.getTimestamp() > currentMillis) {
             throw new TransactionOutOfRangeException();
         }
     }
-
 }
