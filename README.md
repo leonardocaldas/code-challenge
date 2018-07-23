@@ -1,7 +1,7 @@
 # N26 Code Challenge
 
-[![Build Status](https://travis-ci.org/leonardocaldas/n26-code-challenge.svg?branch=master)](https://travis-ci.org/leonardocaldas/n26-code-challenge)
-[![codecov](https://codecov.io/gh/leonardocaldas/n26-code-challenge/branch/master/graph/badge.svg)](https://codecov.io/gh/leonardocaldas/n26-code-challenge)
+[![Build Status](https://travis-ci.org/leonardocaldas/code-challenge.svg?branch=master)](https://travis-ci.org/leonardocaldas/code-challenge)
+[![codecov](https://codecov.io/gh/leonardocaldas/code-challenge/branch/master/graph/badge.svg)](https://codecov.io/gh/leonardocaldas/code-challenge)
 
 ## Introduction
 The purpose of this project is to collect statistics of all transactions that happened in the last minute.  
