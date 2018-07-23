@@ -32,4 +32,9 @@ public class TransactionAggregateRepositoryImpl implements TransactionAggregateR
     public List<TransactionAggregate> findAll() {
         return new ArrayList<>(aggregates.values());
     }
+
+    @Override
+    public void deleteAll() {
+        aggregates.clear();
+    }
 }

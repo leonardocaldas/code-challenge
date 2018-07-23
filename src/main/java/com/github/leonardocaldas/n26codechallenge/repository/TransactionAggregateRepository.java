@@ -11,4 +11,6 @@ public interface TransactionAggregateRepository {
     Optional<TransactionAggregate> find(Long id);
 
     List<TransactionAggregate> findAll();
+
+    void deleteAll();
 }

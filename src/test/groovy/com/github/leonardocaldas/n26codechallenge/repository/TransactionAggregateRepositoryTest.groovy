@@ -89,4 +89,32 @@ class TransactionAggregateRepositoryTest extends Specification {
         found == Optional.ofNullable(updateAggregate)
         all == asList(updateAggregate)
     }
+
+    def "should delete all transactions"() {
+        given:
+        def id = 1
+
+        def transactionAggregate = TransactionAggregate.builder()
+                .count(2L)
+                .max(20.0)
+                .min(15.0)
+                .sum(35.0)
+                .timestampInSeconds(10)
+                .build()
+
+        when:
+        repositoy.save(id, transactionAggregate)
+        def found = repositoy.find(id)
+        def all = repositoy.findAll()
+
+        repositoy.deleteAll()
+        def foundAfterDelete = repositoy.find(id)
+        def allAfterDelete = repositoy.findAll()
+
+        then:
+        found == Optional.ofNullable(transactionAggregate)
+        all == asList(transactionAggregate)
+        foundAfterDelete == Optional.ofNullable(null)
+        allAfterDelete == emptyList()
+    }
 }
