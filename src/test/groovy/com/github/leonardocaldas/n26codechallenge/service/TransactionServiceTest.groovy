@@ -8,6 +8,7 @@ import com.github.leonardocaldas.n26codechallenge.service.impl.TransactionServic
 import spock.lang.Specification
 
 import java.time.Instant
+import java.util.function.UnaryOperator
 
 class TransactionServiceTest extends Specification {
 
@@ -24,7 +25,6 @@ class TransactionServiceTest extends Specification {
                 .build()
 
         def key = getIndexFromTransaction(transaction)
-        def aggregateFound = Optional.ofNullable(null);
 
         def expectedAggregate = TransactionAggregate.builder()
                 .max(transaction.getAmount())
@@ -38,8 +38,9 @@ class TransactionServiceTest extends Specification {
         service.save(transaction)
 
         then:
-        1 * repositoy.find(key) >> aggregateFound
-        1 * repositoy.save(key, expectedAggregate)
+        1 * repositoy.compute(key, { UnaryOperator func ->
+            return func.apply(null) == expectedAggregate
+        })
     }
 
     def "should save and merge transaction"() {
@@ -58,7 +59,6 @@ class TransactionServiceTest extends Specification {
                 .count(2L)
                 .timestampInSeconds((currentMillis / 1000).toLong())
                 .build()
-        def aggregateFound = Optional.ofNullable(aggregate)
 
         def expectedAggregate = TransactionAggregate.builder()
                 .max(15.0)
@@ -72,8 +72,44 @@ class TransactionServiceTest extends Specification {
         service.save(transaction)
 
         then:
-        1 * repositoy.find(key) >> aggregateFound
-        1 * repositoy.save(key, expectedAggregate)
+        1 * repositoy.compute(key, { UnaryOperator func ->
+            return func.apply(aggregate) == expectedAggregate
+        })
+    }
+
+    def "should replace old transaction with new one"() {
+        given:
+        def currentMillis = Instant.now().toEpochMilli()
+        def transaction = Transaction.builder()
+                .amount(10.0)
+                .timestamp(currentMillis)
+                .build()
+
+        def transactionAggregate = TransactionAggregate.builder()
+                .max(10.0)
+                .min(5.0)
+                .sum(15.0)
+                .count(2L)
+                .timestampInSeconds(transaction.getTimestampInSeconds() - TIME_RANGE - 1)
+                .build()
+
+        def key = getIndexFromTransaction(transaction)
+
+        def expectedAggregate = TransactionAggregate.builder()
+                .max(transaction.getAmount())
+                .min(transaction.getAmount())
+                .sum(transaction.getAmount())
+                .count(1L)
+                .timestampInSeconds(transaction.getTimestampInSeconds())
+                .build()
+
+        when:
+        service.save(transaction)
+
+        then:
+        1 * repositoy.compute(key, { UnaryOperator func ->
+            return func.apply(transactionAggregate) == expectedAggregate
+        })
     }
 
     def "should not save when timestamp is too old"() {
@@ -88,8 +124,7 @@ class TransactionServiceTest extends Specification {
         service.save(transaction)
 
         then:
-        0 * repositoy.find(_)
-        0 * repositoy.save(_, _)
+        0 * repositoy.compute(_, _)
         thrown(TransactionOutOfRangeException)
     }
 
@@ -106,8 +141,7 @@ class TransactionServiceTest extends Specification {
         service.save(transaction)
 
         then:
-        0 * repositoy.find(_)
-        0 * repositoy.save(_, _)
+        0 * repositoy.compute(_, _)
         thrown(TransactionOutOfRangeException)
     }
 

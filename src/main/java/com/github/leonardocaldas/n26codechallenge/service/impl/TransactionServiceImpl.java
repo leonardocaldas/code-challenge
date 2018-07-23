@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 
-import static com.github.leonardocaldas.n26codechallenge.util.TransactionLock.getLockForKey;
 import static com.github.leonardocaldas.n26codechallenge.util.TransactionThreshold.getThresholdInMillis;
 import static com.github.leonardocaldas.n26codechallenge.util.TransactionThreshold.getThresholdInSeconds;
 
@@ -35,14 +35,9 @@ public class TransactionServiceImpl implements TransactionService {
 
         Long index = getIndexFromTransaction(transaction);
 
-        synchronized (getLockForKey(index)) {
-
-            TransactionAggregate transactionAggregate = transactionAggregateRepository.find(index)
-                    .map(aggregate -> compute(currentMillis, aggregate, transaction))
-                    .orElseGet(() -> initializeAggregate(transaction));
-
-            transactionAggregateRepository.save(index, transactionAggregate);
-        }
+        transactionAggregateRepository.compute(index, (aggr) -> Optional.ofNullable(aggr)
+                .map(aggregate -> compute(currentMillis, aggregate, transaction))
+                .orElseGet(() -> initializeAggregate(transaction)));
     }
 
     private TransactionAggregate initializeAggregate(Transaction transaction) {

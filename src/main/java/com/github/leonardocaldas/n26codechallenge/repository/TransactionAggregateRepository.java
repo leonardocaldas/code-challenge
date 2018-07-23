@@ -4,13 +4,12 @@ import com.github.leonardocaldas.n26codechallenge.model.TransactionAggregate;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 public interface TransactionAggregateRepository {
-    void save(Long id, TransactionAggregate transaction);
-
-    Optional<TransactionAggregate> find(Long id);
-
     List<TransactionAggregate> findAll();
+
+    TransactionAggregate compute(Long id, UnaryOperator<TransactionAggregate> function);
 
     void deleteAll();
 }

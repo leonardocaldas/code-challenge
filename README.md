@@ -100,9 +100,7 @@ Date: Mon, 23 Jul 2018 03:55:27 GMT
 To meet this requirement, a key is created by running a modulo of 60 against the transaction timestamp. By doing this, we can aggregate all the transactions with the same key inside a HashMap.      
 
 **2. The API have to be threadsafe with concurrent requests:**<br>
-To meet this requirement two things were used:
-- A **ConcurrentHashMap** with only 60 positions that holds all the transaction statistics.
-- A synchronized block by the transaction key. This is used to guarantee that transactions with the same key do not run at the same time.
+To meet this requirement, a **ConcurrentHashMap** is used with only 60 positions that holds all the transaction statistics.
 
 ## Additional Information
 
