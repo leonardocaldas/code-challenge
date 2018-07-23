@@ -67,6 +67,8 @@
 	</dependencies>
 
 	<build>
+        <finalName>n26-code-challenge</finalName>
+
 		<plugins>
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
