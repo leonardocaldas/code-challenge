@@ -2,7 +2,6 @@ package com.github.leonardocaldas.n26codechallenge.repository.impl;
 
 import com.github.leonardocaldas.n26codechallenge.model.TransactionAggregate;
 import com.github.leonardocaldas.n26codechallenge.repository.TransactionAggregateRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -12,11 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class TransactionAggregateRepositoryImpl implements TransactionAggregateRepository {
-    private final ConcurrentHashMap<Long, TransactionAggregate> aggregates;
-
-    public TransactionAggregateRepositoryImpl(@Value("${transaction.time-range}") Integer timeRange) {
-        this.aggregates = new ConcurrentHashMap<>(timeRange);
-    }
+    private final ConcurrentHashMap<Long, TransactionAggregate> aggregates = new ConcurrentHashMap<>();
 
     @Override
     public void save(Long id, TransactionAggregate transactionAggregate) {

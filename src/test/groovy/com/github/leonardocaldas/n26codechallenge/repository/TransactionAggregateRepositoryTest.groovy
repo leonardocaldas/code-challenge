@@ -9,8 +9,7 @@ import static java.util.Collections.emptyList
 
 class TransactionAggregateRepositoryTest extends Specification {
 
-    def TIME_RANGE = 60
-    def repositoy = new TransactionAggregateRepositoryImpl(TIME_RANGE)
+    def repositoy = new TransactionAggregateRepositoryImpl()
 
     def "should save transaction aggregates"() {
         given:
