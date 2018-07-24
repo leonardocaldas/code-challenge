@@ -97,10 +97,10 @@ Date: Mon, 23 Jul 2018 03:55:27 GMT
 ## Requirements and Solutions
 
 **1. Endpoints have to execute in constant time and memory (O(1)):**<br>
-To meet this requirement, a key is created by running a modulo of 60 against the transaction timestamp. By doing this, we can aggregate all the transactions with the same key together.      
+To meet this requirement, a key is created by running a modulo of 60 against the transaction timestamp. By doing this, we can aggregate all transactions with the same key together inside a HashMap. So no matter how many transactions are coming in, the memory and time necessary to retrieve the statistics is always constant.
 
 **2. The API have to be threadsafe with concurrent requests:**<br>
-To meet this requirement, the method '**compute**' of the **ConcurrentHashMap** is used to encapsulate all the processing and aggregation of transactions.
+To meet this requirement, the method '**compute**' of the **ConcurrentHashMap** is used to encapsulate all the processing and aggregation of transactions. Internally this method creates a lock by key and allows for the lambda function used to compute the value to be thread safe.
 
 ## Additional Information
 
